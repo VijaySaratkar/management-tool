@@ -7,6 +7,7 @@ import cors from "cors";
 import organizationRoutes from "./routes/orgRoutes.js";
 import employeeRoutes from "./routes/employeeRoutes.js";
 import leaveRoutes from "./routes/leaveRoutes.js";
+import checkLogRoutes from "./routes/checkLogRoutes.js"
 
 dotenv.config();
 
@@ -21,6 +22,7 @@ app.use(express.json());
 app.use("/api/organizations", organizationRoutes);
 app.use("/api/employees", employeeRoutes);
 app.use("/api/leaves", leaveRoutes);
+app.use("/api/checklogs", checkLogRoutes);
 
 // Default Route
 app.get("/", (req, res) => {
