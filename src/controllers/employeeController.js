@@ -21,22 +21,35 @@ export const createEmployee = async (req, res) => {
             designation,
             password,
             profileImage,
-            orgId,
         } = req.body;
 
-        // Validate organization
+        console.log("Logged-in employee =>", req.employee);
+
+        // ✅ Step 1: Get full logged-in employee data
+        const loggedInEmployee = await Employee.findById(req.employee.id);
+        if (!loggedInEmployee) {
+            return res.status(404).json({ message: "Logged-in employee not found" });
+        }
+
+        // ✅ Step 2: Extract orgId
+        const orgId = loggedInEmployee.orgId;
+        if (!orgId) {
+            return res.status(400).json({ message: "Organization ID missing in employee data" });
+        }
+
+        // ✅ Step 3: Validate organization
         const organization = await Organization.findById(orgId);
         if (!organization) {
             return res.status(400).json({ message: "Organization not found" });
         }
 
-        // Check for duplicate email
+        // ✅ Step 4: Check for duplicate email
         const existingEmployee = await Employee.findOne({ email });
         if (existingEmployee) {
             return res.status(400).json({ message: "Employee already exists" });
         }
 
-        // Generate random 8-digit password if not provided
+        // ✅ Step 5: Generate random password if not provided
         const generateRandomPassword = (length = 12) => {
             const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
             let result = '';
@@ -49,7 +62,7 @@ export const createEmployee = async (req, res) => {
         const plainPassword = password || generateRandomPassword();
         const hashedPassword = await bcrypt.hash(plainPassword, 10);
 
-        // Create employee
+        // ✅ Step 6: Create employee
         const employee = await Employee.create({
             name,
             email,
@@ -66,19 +79,23 @@ export const createEmployee = async (req, res) => {
             orgId,
         });
 
-        // Send email with login info
+        // ✅ Step 7: Send email
         const loginMessage = `Hi ${name},\nYour account has been created.\nLogin email: ${email}\nPassword: ${plainPassword}`;
         await sendEmail(email, "Your Employee Login Credentials", loginMessage);
 
+        // ✅ Step 8: Populate orgId in the response
+        const populatedEmployee = await Employee.findById(employee._id).populate("orgId", "name contactEmail");
+
         res.status(201).json({
             message: "Employee created and login credentials sent to email",
-            employee,
+            employee: populatedEmployee,
         });
     } catch (error) {
-        console.error(error);
+        console.error("Error creating employee:", error);
         res.status(500).json({ message: "Server Error", error: error.message });
     }
 };
+
 
 
 export const getAllEmployees = async (req, res) => {

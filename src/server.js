@@ -4,8 +4,9 @@ import mongoose from "mongoose";
 import cors from "cors";
 
 // Routes
-import employeeRoutes from "./routes/employeeRoutes.js";
 import organizationRoutes from "./routes/orgRoutes.js";
+import employeeRoutes from "./routes/employeeRoutes.js";
+import leaveRoutes from "./routes/leaveRoutes.js";
 
 dotenv.config();
 
@@ -17,8 +18,9 @@ app.use(cors());
 app.use(express.json());
 
 // API Routes
-app.use("/api/employees", employeeRoutes);
 app.use("/api/organizations", organizationRoutes);
+app.use("/api/employees", employeeRoutes);
+app.use("/api/leaves", leaveRoutes);
 
 // Default Route
 app.get("/", (req, res) => {

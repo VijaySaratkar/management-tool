@@ -12,7 +12,7 @@ import authMiddleware from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-router.post("/", createEmployee);
+router.post("/", authMiddleware, createEmployee);
 router.post("/login", loginEmployee);
 router.put("/reset-password", authMiddleware, resetPassword);
 router.get("/", authMiddleware, getAllEmployees);

@@ -24,7 +24,11 @@ const employeeSchema = new mongoose.Schema(
         orgId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Organization",
-            required: true,  // Assuming every employee must belong to an organization
+            required: true,
+        },
+        hasLoggedIn: {
+            type: Boolean,
+            default: false,
         },
         password: { type: String, required: false },
     },
